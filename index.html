@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineRecap Myanmar - AI Video Recap Studio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter & Padauk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Padauk', 'Inter', sans-serif;
+            background: radial-gradient(circle at 50% 0%, #161b26 0%, #080b11 100%);
+            color: #e2e8f0;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        /* Light Mode Styling */
+        body.light-theme {
+            background: radial-gradient(circle at 50% 0%, #f1f5f9 0%, #e2e8f0 100%);
+            color: #0f172a;
+        }
+        body.light-theme .studio-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        body.light-theme header {
+            background: rgba(255, 255, 255, 0.8);
+            border-bottom-color: rgba(0, 0, 0, 0.06);
+        }
+        body.light-theme .bg-slate-900\/80,
+        body.light-theme .bg-slate-900\/40,
+        body.light-theme .bg-slate-950\/80 {
+            background-color: rgba(241, 245, 249, 0.9) !important;
+            color: #1e293b !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-theme .text-slate-400,
+        body.light-theme .text-slate-500 {
+            color: #64748b !important;
+        }
+        body.light-theme .text-slate-200,
+        body.light-theme .text-slate-300 {
+            color: #1e293b !important;
+        }
+        body.light-theme .border-slate-800,
+        body.light-theme .border-slate-700 {
+            border-color: #cbd5e1 !important;
+        }
+        .studio-card {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-rose-500 selection:text-white">
+
+    <!-- Minimal Header with Integrated Action Menu -->
+    <header class="border-b border-white/5 bg-slate-950/40 backdrop-blur-md sticky top-0 z-40 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white shadow-lg shadow-rose-500/20">
+                    <i class="fa-solid fa-film text-sm"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm md:text-base font-bold text-white tracking-wide">CineRecap <span class="text-rose-400 font-semibold">Studio</span></h1>
+                    <p class="text-[11px] text-slate-400">ဗီဒီယိုတင်ရုံဖြင့် မြန်မာအသံနှင့် စာတန်းထိုး အလိုအလျောက်ထုတ်ပေးသည်</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    Ready
+                </span>
+
+                <!-- Quick Menu Toggle Dropdown Button -->
+                <div class="relative">
+                    <button id="menuDropdownBtn" class="bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 px-3 py-1.5 rounded-xl text-xs flex items-center gap-2 transition shadow-sm">
+                        <i class="fa-solid fa-bars text-slate-300"></i>
+                        <span class="hidden sm:inline">Menu</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                    </button>
+
+                    <!-- Menu Dropdown Panel -->
+                    <div id="menuDropdown" class="absolute right-0 mt-2 w-56 studio-card rounded-2xl p-2.5 shadow-2xl border border-slate-700/80 hidden z-50 backdrop-blur-xl">
+                        <!-- Theme Toggle -->
+                        <button id="themeToggleBtn" class="w-full text-left px-3 py-2 rounded-xl text-xs hover:bg-slate-800/60 text-slate-300 hover:text-white flex items-center justify-between transition">
+                            <span class="flex items-center gap-2.5">
+                                <i id="themeIcon" class="fa-solid fa-sun text-amber-400"></i>
+                                <span id="themeLabel">Light Mode သို့ ပြောင်းမည်</span>
+                            </span>
+                            <span class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">Theme</span>
+                        </button>
+
+                        <div class="h-px bg-slate-800 my-1.5"></div>
+
+                        <!-- Telegram Contact Link -->
+                        <a href="https://t.me/your_telegram_channel" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl text-xs hover:bg-slate-800/60 text-slate-300 hover:text-white flex items-center justify-between transition">
+                            <span class="flex items-center gap-2.5">
+                                <i class="fa-brands fa-telegram text-sky-400 text-sm"></i>
+                                <span>Telegram Contact</span>
+                            </span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-500"></i>
+                        </a>
+
+                        <!-- External Custom Link (https://) -->
+                        <a id="customWebLink" href="https://google.com" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl text-xs hover:bg-slate-800/60 text-slate-300 hover:text-white flex items-center justify-between transition">
+                            <span class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-globe text-emerald-400 text-sm"></i>
+                                <span>Official Website</span>
+                            </span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-500"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Clean Container -->
+    <main class="max-w-6xl w-full mx-auto p-4 md:p-8 flex-1 flex flex-col gap-6">
+
+        <!-- Top Row: Interactive 2-Step Setup (Step 1 & Step 2) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- Step 1: Video File Dropper -->
+            <div class="studio-card rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 flex items-center justify-center text-[10px]">1</span>
+                            Video ဖိုင်ရွေးပါ
+                        </span>
+                        <span id="fileBadge" class="text-[10px] text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-md">ဖိုင်မရှိသေးပါ</span>
+                    </div>
+
+                    <div id="dropZone" class="border border-dashed border-slate-700 hover:border-rose-400/80 rounded-xl p-5 text-center cursor-pointer transition bg-slate-900/40 group">
+                        <input type="file" id="videoFile" accept="video/*" class="hidden">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-slate-500 group-hover:text-rose-400 transition mb-2"></i>
+                        <p class="text-xs font-medium text-slate-200">ဗီဒီယိုဖိုင်ကို ဤနေရာတွင် နှိပ်ထည့်ပါ</p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">MP4, MKV သို့မဟုတ် WEBM</p>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <input type="text" id="movieTitle" placeholder="ဇာတ်ကားအမည် (ဥပမာ - Inception)" class="w-full bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-rose-500 transition">
+                </div>
+            </div>
+
+            <!-- Step 2: Voice Personality Selector -->
+            <div class="studio-card rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[10px]">2</span>
+                            မြန်မာအသံ ရွေးချယ်ပါ
+                        </span>
+                        <span id="selectedVoiceBadge" class="text-[10px] text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-md">သီဟ (ဇာတ်ကြောင်း)</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <!-- Thiha -->
+                        <div id="voiceThihaCard" class="cursor-pointer border-2 border-rose-500 bg-rose-500/10 rounded-xl p-2.5 transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-bold text-white">သီဟ</span>
+                                    <i class="fa-solid fa-mars text-rose-400 text-xs"></i>
+                                </div>
+                                <p class="text-[9px] text-slate-400 leading-tight">ဇာတ်ကြောင်းပြော ပုံမှန်</p>
+                            </div>
+                            <button type="button" class="sampleVoiceBtn mt-2 text-[9px] bg-slate-800/80 hover:bg-slate-700 text-rose-300 py-1 rounded text-center transition flex items-center justify-center gap-1" data-voice="thiha">
+                                <i class="fa-solid fa-play text-[7px]"></i> စမ်းရန်
+                            </button>
+                        </div>
+
+                        <!-- Nilar -->
+                        <div id="voiceNilarCard" class="cursor-pointer border border-slate-800 bg-slate-900/50 rounded-xl p-2.5 transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-bold text-white">နီလာ</span>
+                                    <i class="fa-solid fa-venus text-cyan-400 text-xs"></i>
+                                </div>
+                                <p class="text-[9px] text-slate-400 leading-tight">စိတ်လှုပ်ရှားဖွယ် အမျိုးသမီးသံ</p>
+                            </div>
+                            <button type="button" class="sampleVoiceBtn mt-2 text-[9px] bg-slate-800/80 hover:bg-slate-700 text-cyan-300 py-1 rounded text-center transition flex items-center justify-center gap-1" data-voice="nilar">
+                                <i class="fa-solid fa-play text-[7px]"></i> စမ်းရန်
+                            </button>
+                        </div>
+
+                        <!-- Aung Gyi (Deep Action) -->
+                        <div id="voiceAungCard" class="cursor-pointer border border-slate-800 bg-slate-900/50 rounded-xl p-2.5 transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-bold text-white">အောင်ကြီး</span>
+                                    <i class="fa-solid fa-skull text-amber-400 text-xs"></i>
+                                </div>
+                                <p class="text-[9px] text-slate-400 leading-tight">အက်ရှင်/သည်းဖို အသံသြဇာနက်</p>
+                            </div>
+                            <button type="button" class="sampleVoiceBtn mt-2 text-[9px] bg-slate-800/80 hover:bg-slate-700 text-amber-300 py-1 rounded text-center transition flex items-center justify-center gap-1" data-voice="aung">
+                                <i class="fa-solid fa-play text-[7px]"></i> စမ်းရန်
+                            </button>
+                        </div>
+
+                        <!-- May Thu (Warm / Drama) -->
+                        <div id="voiceMayCard" class="cursor-pointer border border-slate-800 bg-slate-900/50 rounded-xl p-2.5 transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-bold text-white">မေသူ</span>
+                                    <i class="fa-solid fa-heart text-pink-400 text-xs"></i>
+                                </div>
+                                <p class="text-[9px] text-slate-400 leading-tight">နူးညံ့ငြိမ့်ညောင်း ဒရာမာသံ</p>
+                            </div>
+                            <button type="button" class="sampleVoiceBtn mt-2 text-[9px] bg-slate-800/80 hover:bg-slate-700 text-pink-300 py-1 rounded text-center transition flex items-center justify-center gap-1" data-voice="may">
+                                <i class="fa-solid fa-play text-[7px]"></i> စမ်းရန်
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3 flex items-center gap-2">
+                    <span class="text-[10px] text-slate-400">စကားပြောနှုန်း:</span>
+                    <select id="voiceSpeedSelect" class="bg-slate-900/80 border border-slate-800 rounded-lg px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-400">
+                        <option value="1.0">ပုံမှန်နှုန်း (1.0x)</option>
+                        <option value="1.15" selected>သွက်လက်နှုန်း (1.15x - TikTok/Reels အကြံပြု)</option>
+                        <option value="1.3">မြန်နှုန်းမြင့် (1.3x - Fast Recap)</option>
+                        <option value="0.9">အေးဆေးဖြည်းညှင်း (0.9x)</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Middle Row: Logo Branding, Delogo & Aspect Ratio Bar + Direct Action Button -->
+        <div class="studio-card rounded-2xl p-5 flex flex-col gap-5 border border-slate-800/80">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                
+                <!-- Ratio Selector (TikTok, YouTube, FB, IG) -->
+                <div class="flex flex-col justify-between">
+                    <span class="text-xs font-semibold text-slate-300 flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-crop-simple text-amber-400"></i> Platform Ratio ရွေးပါ
+                    </span>
+                    <div class="grid grid-cols-4 gap-1.5 text-center">
+                        <button type="button" class="ratioBtn active bg-rose-500/20 border border-rose-500 text-rose-300 rounded-lg py-1.5 text-[11px] font-medium transition" data-ratio="16:9">
+                            <i class="fa-brands fa-youtube block text-xs mb-0.5"></i> 16:9 (YT)
+                        </button>
+                        <button type="button" class="ratioBtn bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 rounded-lg py-1.5 text-[11px] font-medium transition" data-ratio="9:16">
+                            <i class="fa-brands fa-tiktok block text-xs mb-0.5"></i> 9:16 (Shorts)
+                        </button>
+                        <button type="button" class="ratioBtn bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 rounded-lg py-1.5 text-[11px] font-medium transition" data-ratio="1:1">
+                            <i class="fa-brands fa-instagram block text-xs mb-0.5"></i> 1:1 (Square)
+                        </button>
+                        <button type="button" class="ratioBtn bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 rounded-lg py-1.5 text-[11px] font-medium transition" data-ratio="4:5">
+                            <i class="fa-brands fa-facebook block text-xs mb-0.5"></i> 4:5 (Feed)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Logo Watermark & Floating Movement -->
+                <div class="flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-stamp text-cyan-400"></i> မိမိ Logo ထည့်သွင်းခြင်း
+                        </span>
+                        <button id="clearLogoBtn" class="text-[10px] text-slate-500 hover:text-rose-400 hidden">ဖျက်မည်</button>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <label class="cursor-pointer bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-300 flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-image text-cyan-400"></i> Logo တင်ရန်
+                            <input type="file" id="logoInput" accept="image/*" class="hidden">
+                        </label>
+
+                        <select id="logoPosSelect" class="bg-slate-900 border border-slate-800 text-[11px] rounded-lg px-2 py-1.5 text-slate-300 flex-1">
+                            <option value="top-right">ညာဘက်ထိပ် (Top Right)</option>
+                            <option value="top-left">ဘယ်ဘက်ထိပ် (Top Left)</option>
+                            <option value="bottom-right">ညာဘက်အောက် (Bottom Right)</option>
+                            <option value="bottom-left">ဘယ်ဘက်အောက် (Bottom Left)</option>
+                            <option value="bounce" selected>လှည့်လည်ပြေးနေမည် (Bouncing Logo)</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-3 mt-2 text-[10px] text-slate-400">
+                        <span class="w-12">အရွယ်အစား:</span>
+                        <input type="range" id="logoSize" min="30" max="140" value="70" class="flex-1 h-1 bg-slate-800 rounded accent-cyan-400">
+                        <span id="logoSizeVal">70px</span>
+                    </div>
+                </div>
+
+                <!-- Original Subtitle / Logo Auto-Delogo Mask -->
+                <div class="flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic text-emerald-400"></i> မူရင်းစာ/Logo ဖျောက်ဖျက်မှု
+                        </span>
+                        <span class="text-[10px] bg-emerald-500/10 text-emerald-300 px-1.5 py-0.5 rounded">Smart Mask</span>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer">
+                            <input type="checkbox" id="maskBottomSub" checked class="rounded border-slate-700 text-rose-500 focus:ring-0">
+                            မူရင်းအောက်ခြေ Subtitle စာများကို Blur ဖြင့်ဖျောက်မည်
+                        </label>
+                        <label class="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer">
+                            <input type="checkbox" id="maskTopLogo" class="rounded border-slate-700 text-rose-500 focus:ring-0">
+                            မူရင်းထိပ်ပိုင်း TV/Watermark Logo များကို Blur ဖျောက်မည်
+                        </label>
+                    </div>
+
+                    <p class="text-[10px] text-slate-500 mt-1">မူရင်းစာတန်းနှင့် Logo များနေရာကို အလိုအလျောက် Mask အုပ်ကာ ဝါးပေးမည်ဖြစ်ပါသည်။</p>
+                </div>
+
+            </div>
+
+            <!-- Generate & Download Video Button (Placed directly below Ratio & Settings) -->
+            <div class="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p class="text-xs text-slate-400 flex items-center gap-2 text-center sm:text-left">
+                    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                    အထက်ပါ Setting များအတိုင်း ဗီဒီယိုထဲသို့ မြန်မာအသံ၊ စာတန်းထိုး၊ Logo နှင့် Mask များကို Hardcode ထုတ်ယူပါမည်။
+                </p>
+                <button id="renderBtn" class="w-full sm:w-auto bg-gradient-to-r from-rose-500 via-pink-600 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-rose-950/50 transition flex items-center justify-center gap-2 text-xs md:text-sm shrink-0">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Generate & Download Video</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Unified Studio Player & Live Script Editor -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            
+            <!-- Video Player Display (8 Cols) -->
+            <div class="lg:col-span-8 studio-card rounded-2xl p-4 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-display text-rose-400"></i> Video Preview
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <span id="ratioBadge" class="text-[10px] text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded font-mono">16:9</span>
+                            <span id="playerStateText" class="text-[10px] text-slate-500 bg-slate-900 px-2 py-0.5 rounded">အသင့်ဖြစ်နေပါသည်</span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Aspect Ratio Viewport -->
+                    <div id="playerWrapper" class="relative bg-black rounded-xl overflow-hidden aspect-video flex items-center justify-center border border-white/5 shadow-inner transition-all duration-300 mx-auto max-h-[460px]">
+                        <video id="player" class="w-full h-full object-contain hidden" playsinline></video>
+                        
+                        <!-- Dynamic Logo Overlay Preview -->
+                        <img id="logoPreview" class="absolute pointer-events-none hidden rounded-lg object-contain drop-shadow-md z-30 transition-all duration-75" alt="Logo">
+
+                        <!-- Smart Delogo Blur Preview Areas -->
+                        <div id="topMaskPreview" class="absolute top-2 right-2 w-28 h-8 bg-black/60 backdrop-blur-md border border-white/10 rounded hidden pointer-events-none z-20 flex items-center justify-center text-[9px] text-slate-400">
+                            Masked Area
+                        </div>
+                        <div id="bottomMaskPreview" class="absolute bottom-10 left-10 right-10 h-10 bg-black/75 backdrop-blur-md rounded-lg border border-white/10 pointer-events-none z-20 flex items-center justify-center text-[9px] text-slate-400">
+                            Original Subtitle Masked
+                        </div>
+
+                        <div id="emptyScreen" class="flex flex-col items-center justify-center text-center p-6">
+                            <i class="fa-solid fa-clapperboard text-3xl text-slate-700 mb-2"></i>
+                            <p class="text-xs text-slate-400">အဆင့် (၁) မှ ဗီဒီယိုဖိုင်ကို စတင်ရွေးချယ်ပါ</p>
+                        </div>
+
+                        <!-- Real-time Burned-in Subtitle Preview -->
+                        <div id="subOverlayContainer" class="absolute bottom-3 left-4 right-4 text-center pointer-events-none hidden z-30">
+                            <span id="subOverlayText" class="inline-block bg-black/85 text-amber-300 px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-medium border border-white/10 shadow-lg drop-shadow">
+                                (မြန်မာစာတန်းထိုး ဤနေရာတွင် ပေါ်လာပါမည်)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Minimal Controls -->
+                <div class="mt-4 space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span id="timeNow" class="text-[10px] font-mono text-slate-400 w-8">00:00</span>
+                        <input type="range" id="timelineBar" min="0" max="100" value="0" class="flex-1 h-1.5 bg-slate-800 rounded-lg accent-rose-500 cursor-pointer">
+                        <span id="timeDuration" class="text-[10px] font-mono text-slate-400 w-8 text-right">00:00</span>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1">
+                        <div class="flex items-center gap-2">
+                            <button id="togglePlayBtn" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 px-3.5 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-play text-[10px]"></i> Play
+                            </button>
+                            <button id="restartBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1.5 rounded-lg text-xs transition">
+                                <i class="fa-solid fa-rotate-left text-[10px]"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="text-[11px] text-slate-500">Subtitle စာလုံးအရောင်:</span>
+                            <select id="subColorSelect" class="bg-slate-900 border border-slate-800 text-[11px] rounded px-2 py-1 text-slate-300">
+                                <option value="#facc15">ဝါရွှေရောင်</option>
+                                <option value="#ffffff">အဖြူရောင်</option>
+                                <option value="#38bdf8">မိုးပြာရောင်</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Optional Script Customizer (4 Cols - Collapsible / Optional) -->
+            <div class="lg:col-span-4 studio-card rounded-2xl p-4 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-amber-400"></i> စိတ်ကြိုက်ပြင်ဆင်လိုပါက (Optional)
+                        </span>
+                        <button id="reGenScriptBtn" class="text-[10px] text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                            <i class="fa-solid fa-arrows-rotate text-[9px]"></i> စာအသစ်
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mb-2 leading-relaxed">
+                        AI က ဗီဒီယိုအလိုက် အလိုအလျောက် ရေးပေးထားပြီးဖြစ်ပါသည်။ ဇာတ်ကောင်အမည် သို့မဟုတ် စကားလုံး စိတ်ကြိုက်ပြင်လိုပါက ဤနေရာတွင် ပြင်နိုင်ပါသည်-
+                    </p>
+
+                    <textarea id="scriptBox" class="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 text-xs text-slate-200 custom-scrollbar focus:outline-none focus:border-rose-500/80 leading-relaxed h-[210px] resize-none"></textarea>
+                </div>
+
+                <div class="mt-2 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-500">
+                    <span id="charCount">စကားလုံး: ၀ လုံး</span>
+                    <button id="copyScriptBtn" class="hover:text-slate-300 text-slate-400 flex items-center gap-1">
+                        <i class="fa-regular fa-copy"></i> Copy Script
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Clean Footer -->
+    <footer class="border-t border-white/5 py-3 text-center text-[11px] text-slate-600">
+        CineRecap Myanmar • Automated AI Storyboard & Hardcoded Video Engine
+    </footer>
+
+    <!-- Rendering Modal -->
+    <div id="renderModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="studio-card rounded-2xl max-w-sm w-full p-6 text-center border border-white/10 shadow-2xl">
+            <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-xl animate-spin">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+            <h3 class="text-sm font-bold text-white mb-1">ဗီဒီယိုဖိုင် ထုတ်လုပ်နေပါသည်</h3>
+            <p id="renderStatus" class="text-xs text-slate-400 mb-4">Gemini စာသားနှင့် ရွေးထားသော မြန်မာအသံကို ဗီဒီယိုထဲသို့ ထည့်သွင်းနေပါသည်...</p>
+            
+            <div class="w-full bg-slate-950 rounded-full h-2 mb-2 overflow-hidden border border-slate-800">
+                <div id="progressBar" class="bg-gradient-to-r from-rose-500 to-amber-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+            
+            <div class="flex justify-between text-[10px] text-slate-500 mb-4 font-mono">
+                <span id="renderTimer">00:00</span>
+                <span id="renderPercent">0%</span>
+            </div>
+
+            <button id="cancelBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-4 py-1.5 rounded-lg transition">
+                ရပ်ဆိုင်းမည် (Cancel)
+            </button>
+        </div>
+    </div>
+
+    <!-- Hidden Rendering Canvas -->
+    <canvas id="hiddenCanvas" class="hidden"></canvas>
+
+    <!-- Minimal Toast -->
+    <div id="toastBox" class="fixed bottom-5 right-5 bg-slate-900 border border-slate-700 text-slate-200 text-xs px-3.5 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastText">သတင်းစကား</span>
+    </div>
+
+    <script>
+        // Sample Default Script & Subtitle Data
+        const defaultScript = `ကမ္ဘာပေါ်မှာ အပြန့်ပွားဆုံးနဲ့ အသန်မာဆုံး ကပ်ပါးကောင်ဟာ ဘာလဲဆိုတာ သင်သိပါသလား။ ဘက်တီးရီးယားလား၊ ဗိုင်းရပ်စ်လား။ တကယ်တော့ အဲ့ဒါတွေ မဟုတ်ပါဘူး၊ လူတစ်ယောက်ရဲ့ စိတ်ကူး သို့မဟုတ် အကြံဉာဏ်တစ်ခုသာ ဖြစ်ပါတယ်။ စိတ်ကူးတစ်ခုဟာ ဦးနှောက်ထဲ စွဲမြဲသွားပြီဆိုရင် ဘယ်လိုမှ ဖျောက်ဖျက်ပစ်ဖို့ မဖြစ်နိုင်တော့ပါဘူး။ ဒီဇာတ်ကားမှာတော့ လူတွေရဲ့ အိပ်မက်ထဲကို ခိုးဝင်ပြီး စိတ်ကူးတွေကို ခိုးယူတတ်တဲ့ ကော့ဘ် ဆိုတဲ့ သူခိုးတစ်ယောက်အကြောင်းကို စိတ်လှုပ်ရှားဖွယ် တင်ဆက်ထားပါတယ်။`;
+
+        const defaultSrtData = [
+            { start: 0.5, end: 3.5, text: "ကမ္ဘာပေါ်မှာ အသန်မာဆုံး ကပ်ပါးကောင်ဟာ ဘာလဲ သင်သိပါသလား။" },
+            { start: 3.8, end: 6.5, text: "ဘက်တီးရီးယားလား၊ ဗိုင်းရပ်စ်လား။ အဲ့ဒါတွေ မဟုတ်ပါဘူး။" },
+            { start: 7.0, end: 11.2, text: "စိတ်ကူးတစ်ခုသာ ဖြစ်ပါတယ်။ ဦးနှောက်ထဲ စွဲသွားရင် ဖျောက်ဖျက်ဖို့ မဖြစ်နိုင်တော့ပါဘူး။" },
+            { start: 11.8, end: 16.5, text: "ဒီဇာတ်ကားမှာတော့ လူတွေရဲ့ အိပ်မက်ထဲက စိတ်ကူးတွေကို ခိုးယူတတ်တဲ့ သူခိုးတစ်ယောက်အကြောင်းကို တင်ဆက်ထားပါတယ်။" }
+        ];
+
+        // State & DOM Elements
+        let selectedVoice = 'thiha';
+        let parsedSubs = [...defaultSrtData];
+        let hasVideo = false;
+        let isRendering = false;
+        let isPlaying = false;
+        let timer = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+
+        // NEW Features State
+        let currentRatio = '16:9';
+        let customLogoImg = null;
+        let logoPos = 'bounce';
+        let logoPixelSize = 70;
+        let bounceX = 20, bounceY = 20;
+        let bounceSpeedX = 2.0, bounceSpeedY = 1.6;
+        let bounceAnimFrame = null;
+
+        const dropZone = document.getElementById('dropZone');
+        const videoFileInput = document.getElementById('videoFile');
+        const player = document.getElementById('player');
+        const playerWrapper = document.getElementById('playerWrapper');
+        const emptyScreen = document.getElementById('emptyScreen');
+        const fileBadge = document.getElementById('fileBadge');
+        const movieTitle = document.getElementById('movieTitle');
+        const voiceThihaCard = document.getElementById('voiceThihaCard');
+        const voiceNilarCard = document.getElementById('voiceNilarCard');
+        const voiceAungCard = document.getElementById('voiceAungCard');
+        const voiceMayCard = document.getElementById('voiceMayCard');
+        const selectedVoiceBadge = document.getElementById('selectedVoiceBadge');
+        const voiceSpeedSelect = document.getElementById('voiceSpeedSelect');
+        const scriptBox = document.getElementById('scriptBox');
+        const charCount = document.getElementById('charCount');
+        const timelineBar = document.getElementById('timelineBar');
+        const timeNow = document.getElementById('timeNow');
+        const timeDuration = document.getElementById('timeDuration');
+        const togglePlayBtn = document.getElementById('togglePlayBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const subOverlayContainer = document.getElementById('subOverlayContainer');
+        const subOverlayText = document.getElementById('subOverlayText');
+        const subColorSelect = document.getElementById('subColorSelect');
+        const renderBtn = document.getElementById('renderBtn');
+        const renderModal = document.getElementById('renderModal');
+        const progressBar = document.getElementById('progressBar');
+        const renderPercent = document.getElementById('renderPercent');
+        const renderTimer = document.getElementById('renderTimer');
+        const renderStatus = document.getElementById('renderStatus');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const hiddenCanvas = document.getElementById('hiddenCanvas');
+
+        // NEW Menu & Theme Elements
+        const menuDropdownBtn = document.getElementById('menuDropdownBtn');
+        const menuDropdown = document.getElementById('menuDropdown');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeLabel = document.getElementById('themeLabel');
+
+        // Menu Dropdown Open/Close
+        menuDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menuDropdown.classList.toggle('hidden');
+        });
+        document.addEventListener('click', (e) => {
+            if (!menuDropdown.contains(e.target)) {
+                menuDropdown.classList.add('hidden');
+            }
+        });
+
+        // Dark / Light Theme Toggle
+        let isLight = false;
+        themeToggleBtn.addEventListener('click', () => {
+            isLight = !isLight;
+            if (isLight) {
+                document.body.classList.add('light-theme');
+                themeIcon.className = 'fa-solid fa-moon text-indigo-500';
+                themeLabel.innerText = 'Dark Mode သို့ ပြောင်းမည်';
+                showToast('Light Mode သို့ ပြောင်းလိုက်ပါပြီ', 'sun');
+            } else {
+                document.body.classList.remove('light-theme');
+                themeIcon.className = 'fa-solid fa-sun text-amber-400';
+                themeLabel.innerText = 'Light Mode သို့ ပြောင်းမည်';
+                showToast('Dark Mode သို့ ပြောင်းလိုက်ပါပြီ', 'moon');
+            }
+        });
+
+        // Ratio Switcher Buttons
+        function playVoiceSample(v) {
+            window.speechSynthesis.cancel();
+            let text = "မင်္ဂလာပါ၊ ကျွန်တော် သီဟပါ။ ရုပ်ရှင်ဇာတ်ကြောင်းတွေကို တင်ဆက်ပေးသွားပါမယ်။";
+            if (v === 'nilar') text = "မင်္ဂလာပါရှင်၊ ကျွန်မ နီလာပါ။ သည်းထိတ်ရင်ဖို ဇာတ်လမ်းကောင်းတွေကို တင်ဆက်ပေးပါမယ်။";
+            if (v === 'aung') text = "ဒီဇာတ်ကားထဲမှာ ဘာတွေဆက်ဖြစ်မလဲဆိုတာ ရင်ခုန်စွာနဲ့ ဆက်လက်ကြည့်ရှုလိုက်ရအောင်။";
+            if (v === 'may') text = "မင်္ဂလာပါရှင်၊ ဒီနေ့တော့ အသည်းနှလုံးကို လှုပ်ခတ်စေမယ့် ဇာတ်လမ်းလေးတစ်ပုဒ်ကို ပြောပြပေးပါမယ်။";
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voices = window.speechSynthesis.getVoices();
+            const burmeseVoice = voices.find(voice => voice.lang.includes('my') || voice.lang.includes('burmese'));
+            if (burmeseVoice) utterance.voice = burmeseVoice;
+
+            const config = voiceCards[v] || { pitch: 1.0, rate: 1.0 };
+            utterance.pitch = config.pitch;
+            utterance.rate = Number(voiceSpeedSelect.value || 1.15);
+
+            window.speechSynthesis.speak(utterance);
+            showToast(`${voiceCards[v].name} အသံနမူနာ ဖွင့်ပြနေပါသည်`, 'bullhorn');
+        }
+        });
+
+        clearLogoBtn.addEventListener('click', () => {
+            customLogoImg = null;
+            logoPreview.classList.add('hidden');
+            clearLogoBtn.classList.add('hidden');
+            logoInput.value = '';
+            showToast('Logo ကို ဖယ်ရှားလိုက်ပါသည်', 'trash');
+        });
+
+        logoPosSelect.addEventListener('change', (e) => {
+            logoPos = e.target.value;
+            updateLogoPreviewPosition();
+        });
+
+        logoSizeInput.addEventListener('input', (e) => {
+            logoPixelSize = Number(e.target.value);
+            logoSizeVal.innerText = `${logoPixelSize}px`;
+            updateLogoPreviewPosition();
+        });
+
+        function updateLogoPreviewPosition() {
+            if (!customLogoImg) return;
+            logoPreview.style.width = `${logoPixelSize}px`;
+
+            if (logoPos !== 'bounce') {
+                if (bounceAnimFrame) cancelAnimationFrame(bounceAnimFrame);
+                logoPreview.style.transform = 'none';
+                logoPreview.style.top = '';
+                logoPreview.style.bottom = '';
+                logoPreview.style.left = '';
+                logoPreview.style.right = '';
+
+                if (logoPos === 'top-right') {
+                    logoPreview.style.top = '12px';
+                    logoPreview.style.right = '12px';
+                } else if (logoPos === 'top-left') {
+                    logoPreview.style.top = '12px';
+                    logoPreview.style.left = '12px';
+                } else if (logoPos === 'bottom-right') {
+                    logoPreview.style.bottom = '12px';
+                    logoPreview.style.right = '12px';
+                } else if (logoPos === 'bottom-left') {
+                    logoPreview.style.bottom = '12px';
+                    logoPreview.style.left = '12px';
+                }
+            } else {
+                startBouncingLogo();
+            }
+        }
+
+        function startBouncingLogo() {
+            if (bounceAnimFrame) cancelAnimationFrame(bounceAnimFrame);
+            function step() {
+                if (logoPos !== 'bounce' || !customLogoImg) return;
+                const rect = playerWrapper.getBoundingClientRect();
+                const maxW = Math.max(20, rect.width - logoPixelSize - 10);
+                const maxH = Math.max(20, rect.height - logoPixelSize - 10);
+
+                bounceX += bounceSpeedX;
+                bounceY += bounceSpeedY;
+
+                if (bounceX <= 5 || bounceX >= maxW) bounceSpeedX = -bounceSpeedX;
+                if (bounceY <= 5 || bounceY >= maxH) bounceSpeedY = -bounceSpeedY;
+
+                logoPreview.style.top = '0px';
+                logoPreview.style.left = '0px';
+                logoPreview.style.right = '';
+                logoPreview.style.bottom = '';
+                logoPreview.style.transform = `translate3d(${bounceX}px, ${bounceY}px, 0)`;
+
+                bounceAnimFrame = requestAnimationFrame(step);
+            }
+            step();
+        }
+
+        // 3. Delogo & Subtitle Mask Toggles
+        maskBottomSub.addEventListener('change', (e) => {
+            if (e.target.checked) bottomMaskPreview.classList.remove('hidden');
+            else bottomMaskPreview.classList.add('hidden');
+        });
+
+        maskTopLogo.addEventListener('change', (e) => {
+            if (e.target.checked) topMaskPreview.classList.remove('hidden');
+            else topMaskPreview.classList.add('hidden');
+        });
+
+        // 4. Voice Switching (Thiha vs Nilar)
+        voiceThihaCard.addEventListener('click', () => switchVoice('thiha'));
+        voiceNilarCard.addEventListener('click', () => switchVoice('nilar'));
+
+        function switchVoice(voice) {
+            selectedVoice = voice;
+            if (voice === 'thiha') {
+                voiceThihaCard.className = "cursor-pointer border-2 border-rose-500 bg-rose-500/10 rounded-xl p-3 transition flex flex-col justify-between";
+                voiceNilarCard.className = "cursor-pointer border border-slate-800 bg-slate-900/50 rounded-xl p-3 transition flex flex-col justify-between";
+                selectedVoiceBadge.innerText = "သီဟ (ကျား)";
+                selectedVoiceBadge.className = "text-[10px] text-rose-300 bg-rose-500/10 px-2 py-0.5 rounded-md";
+            } else {
+                voiceNilarCard.className = "cursor-pointer border-2 border-cyan-500 bg-cyan-500/10 rounded-xl p-3 transition flex flex-col justify-between";
+                voiceThihaCard.className = "cursor-pointer border border-slate-800 bg-slate-900/50 rounded-xl p-3 transition flex flex-col justify-between";
+                selectedVoiceBadge.innerText = "နီလာ (မ)";
+                selectedVoiceBadge.className = "text-[10px] text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-md";
+            }
+        }
+
+        // Voice sample buttons
+        document.querySelectorAll('.sampleVoiceBtn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const v = btn.getAttribute('data-voice');
+                playVoiceSample(v);
+            });
+        });
+
+        function playVoiceSample(v) {
+            window.speechSynthesis.cancel();
+            const text = v === 'thiha' 
+                ? "မင်္ဂလာပါ၊ ကျွန်တော် သီဟပါ။ ရုပ်ရှင်ဇာတ်ကြောင်းတွေကို တင်ဆက်ပေးသွားပါမယ်။"
+                : "မင်္ဂလာပါရှင်၊ ကျွန်မ နီလာပါ။ သည်းထိတ်ရင်ဖို ဇာတ်လမ်းကောင်းတွေကို ပြောပြပေးသွားပါမယ်ရှင်။";
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voices = window.speechSynthesis.getVoices();
+            const burmeseVoice = voices.find(voice => voice.lang.includes('my') || voice.lang.includes('burmese'));
+            if (burmeseVoice) utterance.voice = burmeseVoice;
+
+            utterance.pitch = v === 'thiha' ? 0.85 : 1.25;
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance);
+            showToast(`${v === 'thiha' ? 'သီဟ' : 'နီလာ'} အသံနမူနာ ဖွင့်ပြနေပါသည်`, 'bullhorn');
+        }
+
+        // 5. Video Upload Handling
+        dropZone.addEventListener('click', () => videoFileInput.click());
+        videoFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                player.src = url;
+                player.classList.remove('hidden');
+                emptyScreen.classList.add('hidden');
+                subOverlayContainer.classList.remove('hidden');
+                hasVideo = true;
+
+                const nameOnly = file.name.replace(/\.[^/.]+$/, "").replace(/[\-_]/g, ' ');
+                movieTitle.value = nameOnly;
+
+                fileBadge.innerText = file.name.length > 14 ? file.name.substring(0, 14) + '...' : file.name;
+                fileBadge.className = "text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md";
+
+                player.onloadedmetadata = () => {
+                    timelineBar.max = Math.floor(player.duration);
+                    timeDuration.innerText = formatTime(player.duration);
+                };
+
+                showToast(`ဗီဒီယို (${file.name}) ထည့်သွင်းပြီးပါပြီ`, 'film');
+            }
+        });
+
+        // 6. Playback Controls
+        togglePlayBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                pausePlayer();
+            } else {
+                startPlayer();
+            }
+        });
+
+        restartBtn.addEventListener('click', () => {
+            pausePlayer();
+            if (hasVideo) player.currentTime = 0;
+            timelineBar.value = 0;
+            timeNow.innerText = "00:00";
+        });
+
+        function startPlayer() {
+            isPlaying = true;
+            togglePlayBtn.innerHTML = `<i class="fa-solid fa-pause text-[10px]"></i> Pause`;
+            document.getElementById('playerStateText').innerText = "ဖွင့်နေပါသည်";
+            if (hasVideo) player.play();
+
+            // Speech Synthesis
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(scriptBox.value);
+            const voices = window.speechSynthesis.getVoices();
+            const burmeseVoice = voices.find(voice => voice.lang.includes('my') || voice.lang.includes('burmese'));
+            if (burmeseVoice) utterance.voice = burmeseVoice;
+            
+            const vConfig = voiceCards[selectedVoice] || { pitch: 1.0 };
+            utterance.pitch = vConfig.pitch;
+            utterance.rate = Number(voiceSpeedSelect.value || 1.15);
+            window.speechSynthesis.speak(utterance);
+
+            timer = setInterval(updateTimeline, 200);
+        }
+
+        function pausePlayer() {
+            isPlaying = false;
+            togglePlayBtn.innerHTML = `<i class="fa-solid fa-play text-[10px]"></i> Play`;
+            document.getElementById('playerStateText').innerText = "ရပ်တန့်ထားပါသည်";
+            if (hasVideo) player.pause();
+            window.speechSynthesis.pause();
+            clearInterval(timer);
+        }
+
+        function updateTimeline() {
+            const current = hasVideo ? player.currentTime : Number(timelineBar.value) + 0.2;
+            timelineBar.value = current;
+            timeNow.innerText = formatTime(current);
+
+            // Match Subtitle
+            const match = parsedSubs.find(s => current >= s.start && current <= s.end);
+            if (match) {
+                subOverlayText.innerText = match.text;
+                subOverlayText.style.color = subColorSelect.value;
+            }
+
+            if (hasVideo && player.ended) {
+                pausePlayer();
+            }
+        }
+
+        timelineBar.addEventListener('input', (e) => {
+            const val = Number(e.target.value);
+            if (hasVideo) player.currentTime = val;
+            timeNow.innerText = formatTime(val);
+        });
+
+        // 7. Gemini Auto Script Regeneration
+        document.getElementById('reGenScriptBtn').addEventListener('click', async () => {
+            showToast('Gemini ဖြင့် ဇာတ်ကြောင်းပြန်လည်ရေးသားနေပါသည်...', 'spinner');
+            const title = movieTitle.value || 'ရုပ်ရှင်ဇာတ်ကား';
+            
+            scriptBox.value = `${title} ရုပ်ရှင်ဇာတ်ကားမှာတော့ အဓိကဇာတ်ကောင်ဟာ ဘယ်သူမှ မမျှော်လင့်ထားတဲ့ လျှို့ဝှက်ချက်တစ်ခုကို စတင်တွေ့ရှိသွားခဲ့ပါတယ်။ အခြေအနေတွေဟာ တဖြည်းဖြည်း ပိုမိုဆိုးရွားလာပြီး နောက်ဆုံးမှာတော့ အသက်ရှင်ကျန်ရစ်ဖို့အတွက် ရင်ခုန်စိတ်လှုပ်ရှားဖွယ် ရင်ဆိုင်ကြိုးစားသွားရပုံကို အကောင်းဆုံး မြင်တွေ့ရမှာ ဖြစ်ပါတယ်။`;
+            updateCharCount();
+            showToast('ဇာတ်ကြောင်း Script အသစ် ရေးသားပြီးပါပြီ', 'check');
+        });
+
+        // 8. 1-Click Multi-Ratio, Delogo & Logo Hardcoded Render
+        renderBtn.addEventListener('click', async () => {
+            if (!hasVideo) {
+                showToast('ကျေးဇူးပြု၍ ဗီဒီယိုဖိုင် အရင်ရွေးချယ်ပေးပါ', 'exclamation');
+                return;
+            }
+
+            pausePlayer();
+            isRendering = true;
+            renderModal.classList.remove('hidden');
+            progressBar.style.width = '15%';
+            renderPercent.innerText = '15%';
+            renderStatus.innerText = `၁/၃ - Ratio (${currentRatio})၊ Logo နှင့် အသံဖိုင်များကို စီစဉ်နေပါသည်...`;
+
+            // Setup Target Canvas Resolution based on Aspect Ratio
+            let targetW = 1280;
+            let targetH = 720;
+
+            if (currentRatio === '9:16') {
+                targetW = 720;
+                targetH = 1280;
+            } else if (currentRatio === '1:1') {
+                targetW = 1080;
+                targetH = 1080;
+            } else if (currentRatio === '4:5') {
+                targetW = 864;
+                targetH = 1080;
+            }
+
+            hiddenCanvas.width = targetW;
+            hiddenCanvas.height = targetH;
+            const ctx = hiddenCanvas.getContext('2d');
+
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const dest = audioCtx.createMediaStreamDestination();
+
+            try {
+                const vidSource = audioCtx.createMediaElementSource(player);
+                vidSource.connect(dest);
+                vidSource.connect(audioCtx.destination);
+            } catch(e){}
+
+            const stream = hiddenCanvas.captureStream(30);
+            if (dest.stream.getAudioTracks().length > 0) {
+                stream.addTrack(dest.stream.getAudioTracks()[0]);
+            }
+
+            recordedChunks = [];
+            const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') 
+                ? 'video/webm;codecs=vp9' 
+                : 'video/webm';
+
+            mediaRecorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 5000000 });
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) recordedChunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: mimeType });
+                const dlUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const cleanTitle = (movieTitle.value || 'Recap').replace(/[^a-zA-Z0-9]/g, '_');
+                const ratioName = currentRatio.replace(':', 'x');
+                a.href = dlUrl;
+                a.download = `${cleanTitle}_${ratioName}_Myanmar_Recap.webm`;
+                a.click();
+                URL.revokeObjectURL(dlUrl);
+
+                renderModal.classList.add('hidden');
+                isRendering = false;
+                window.speechSynthesis.cancel();
+                showToast('Recap ဗီဒီယို အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ!', 'check');
+            };
+
+            // Start Speech for render recording
+            const utterance = new SpeechSynthesisUtterance(scriptBox.value);
+            const voices = window.speechSynthesis.getVoices();
+            const burmeseVoice = voices.find(v => v.lang.includes('my') || v.lang.includes('burmese'));
+            if (burmeseVoice) utterance.voice = burmeseVoice;
+            
+            const renderVConfig = voiceCards[selectedVoice] || { pitch: 1.0 };
+            utterance.pitch = renderVConfig.pitch;
+            utterance.rate = Number(voiceSpeedSelect.value || 1.15);
+
+            player.currentTime = 0;
+            await player.play();
+            window.speechSynthesis.speak(utterance);
+            mediaRecorder.start();
+
+            renderStatus.innerText = "၂/၃ - Logo၊ Delogo Mask နှင့် စာတန်းထိုးများကို Hardcode ရိုက်နှိပ်နေပါသည်...";
+
+            // Bouncing Logo Variables inside Video Canvas
+            let cBounceX = 40;
+            let cBounceY = 40;
+            let cSpeedX = 4.0;
+            let cSpeedY = 3.2;
+
+            function drawFrame() {
+                if (!isRendering) return;
+
+                // 1. Fill Background
+                ctx.fillStyle = '#05080f';
+                ctx.fillRect(0, 0, targetW, targetH);
+
+                // 2. Video Placement (Fit / Fill calculation)
+                const vW = player.videoWidth || 1280;
+                const vH = player.videoHeight || 720;
+                const vAspect = vW / vH;
+                const tAspect = targetW / targetH;
+
+                let drawW, drawH, drawX, drawY;
+
+                if (currentRatio === '9:16' || currentRatio === '4:5' || currentRatio === '1:1') {
+                    // For Vertical / Square: Draw Blurred Background first
+                    ctx.save();
+                    ctx.filter = 'blur(20px) brightness(40%)';
+                    ctx.drawImage(player, -20, -20, targetW + 40, targetH + 40);
+                    ctx.restore();
+
+                    // Draw Main Video Centered
+                    drawW = targetW;
+                    drawH = targetW / vAspect;
+                    drawX = 0;
+                    drawY = (targetH - drawH) / 2;
+                } else {
+                    drawW = targetW;
+                    drawH = targetH;
+                    drawX = 0;
+                    drawY = 0;
+                }
+
+                ctx.drawImage(player, drawX, drawY, drawW, drawH);
+
+                // 3. Smart Delogo Masks (Blur / Box clean-up)
+                if (maskTopLogo.checked) {
+                    const mw = Math.floor(drawW * 0.22);
+                    const mh = Math.floor(drawH * 0.12);
+                    const mx = drawX + drawW - mw - 15;
+                    const my = drawY + 15;
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+                    roundBox(ctx, mx, my, mw, mh, 8);
+                    ctx.fill();
+                }
+
+                if (maskBottomSub.checked) {
+                    const bw = Math.floor(drawW * 0.88);
+                    const bh = Math.floor(drawH * 0.15);
+                    const bx = drawX + (drawW - bw) / 2;
+                    const by = drawY + drawH - bh - 10;
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                    roundBox(ctx, bx, by, bw, bh, 10);
+                    ctx.fill();
+                }
+
+                // 4. Burn-in Myanmar Subtitle
+                const cur = player.currentTime;
+                const active = parsedSubs.find(s => cur >= s.start && cur <= s.end);
+
+                if (active) {
+                    const fontSize = Math.floor(targetH * 0.038);
+                    ctx.font = `bold ${fontSize}px 'Padauk', sans-serif`;
+                    ctx.textAlign = 'center';
+
+                    const text = active.text;
+                    const metrics = ctx.measureText(text);
+                    const padX = 26;
+                    const padY = 12;
+                    const boxW = Math.min(targetW - 30, metrics.width + (padX * 2));
+                    const boxH = fontSize + (padY * 2);
+                    const boxX = (targetW - boxW) / 2;
+                    const boxY = targetH - boxH - (targetH * 0.06);
+
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                    roundBox(ctx, boxX, boxY, boxW, boxH, 8);
+                    ctx.fill();
+
+                    ctx.fillStyle = subColorSelect.value;
+                    ctx.shadowColor = '#000000';
+                    ctx.shadowBlur = 4;
+                    ctx.fillText(text, targetW / 2, boxY + fontSize + (padY / 2) - 3);
+                    ctx.shadowBlur = 0;
+                }
+
+                // 5. Burn-in Custom Logo (Static or Bouncing Animation)
+                if (customLogoImg) {
+                    const lSize = Math.floor((logoPixelSize / 720) * targetW);
+                    let lx = 30, ly = 30;
+
+                    if (logoPos === 'top-right') {
+                        lx = targetW - lSize - 30;
+                        ly = 30;
+                    } else if (logoPos === 'top-left') {
+                        lx = 30;
+                        ly = 30;
+                    } else if (logoPos === 'bottom-right') {
+                        lx = targetW - lSize - 30;
+                        ly = targetH - lSize - 40;
+                    } else if (logoPos === 'bottom-left') {
+                        lx = 30;
+                        ly = targetH - lSize - 40;
+                    } else if (logoPos === 'bounce') {
+                        cBounceX += cSpeedX;
+                        cBounceY += cSpeedY;
+                        if (cBounceX <= 15 || cBounceX >= targetW - lSize - 15) cSpeedX = -cSpeedX;
+                        if (cBounceY <= 15 || cBounceY >= targetH - lSize - 15) cSpeedY = -cSpeedY;
+                        lx = cBounceX;
+                        ly = cBounceY;
+                    }
+
+                    ctx.globalAlpha = 0.88;
+                    ctx.drawImage(customLogoImg, lx, ly, lSize, lSize);
+                    ctx.globalAlpha = 1.0;
+                }
+
+                // Progress Update
+                const dur = player.duration || 1;
+                const percent = Math.min(100, Math.floor((cur / dur) * 100));
+                progressBar.style.width = `${percent}%`;
+                renderPercent.innerText = `${percent}%`;
+                renderTimer.innerText = `${formatTime(cur)} / ${formatTime(dur)}`;
+
+                if (player.ended || cur >= dur - 0.2) {
+                    finishRendering();
+                } else {
+                    requestAnimationFrame(drawFrame);
+                }
+            }
+
+            drawFrame();
+        });
+
+        function finishRendering() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            player.pause();
+            window.speechSynthesis.cancel();
+        }
+
+        cancelBtn.addEventListener('click', () => {
+            isRendering = false;
+            finishRendering();
+            renderModal.classList.add('hidden');
+            showToast('ထုတ်လုပ်မှုကို ရပ်ဆိုင်းလိုက်ပါသည်', 'xmark');
+        });
+
+        function roundBox(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        // Helpers
+        function formatTime(s) {
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return `${m < 10 ? '0' : ''}${m}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        function updateCharCount() {
+            const len = scriptBox.value.trim().length;
+            charCount.innerText = `စကားလုံးရေတွက်: ${len} လုံး`;
+        }
+        scriptBox.addEventListener('input', updateCharCount);
+
+        document.getElementById('copyScriptBtn').addEventListener('click', () => {
+            const el = document.createElement('textarea');
+            el.value = scriptBox.value;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast('စာသားကို ကူးယူပြီးပါပြီ', 'check');
+        });
+
+        function showToast(text, icon = 'check') {
+            const box = document.getElementById('toastBox');
+            const toastText = document.getElementById('toastText');
+            const toastIcon = document.getElementById('toastIcon');
+            toastText.innerText = text;
+            toastIcon.className = `fa-solid fa-${icon} text-rose-400`;
+            box.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                box.classList.add('translate-y-20', 'opacity-0');
+            }, 2800);
+        }
+    </script>
+</body>
+</html>
